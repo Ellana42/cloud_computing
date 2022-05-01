@@ -8,9 +8,15 @@ def get_data():
     movies = pd.read_csv("data/movie_titles.csv", sep='|', encoding="ISO-8859-1", index_col=0, dtype={'date': 'Int64'})
     return movies
 
-def search_movie(movies : pd.DataFrame, input_str: str) -> pd.DataFrame:
+def search_movie(movies : pd.DataFrame, input_str: str) -> list:
+    movies['index_col'] = movies.index
+    print(movies)
     results = movies[movies.title.apply(lambda s : s.lower()).str.contains(input_str)]
-    return results
+    titles = results['title'].to_list()
+    dates = results['date'].to_list()
+    idx = results['index_col'].to_list()
+    res = [{'title' : title, 'date' : date, 'id': i} for title, date, i in zip(titles, dates, idx)]
+    return res
 
 if __name__ == "__main__":
     movies = get_data()

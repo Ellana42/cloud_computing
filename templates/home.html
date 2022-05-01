@@ -15,4 +15,9 @@
             </div>
     </form>
 </div>
+{% for result in results %}
+    <div class="content-section">
+         <a class="nav-item nav-link" href="{{ url_for('movie_page', movie_id=result['id']) }}">{{ result['title'] }}</a>
+    </div>
+{% endfor %}
 {% endblock content %}
