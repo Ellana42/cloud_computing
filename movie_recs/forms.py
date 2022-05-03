@@ -9,4 +9,4 @@ class SearchForm(FlaskForm):
 
 class ReviewForm(FlaskForm):
     rating = SelectField("Rating", choices=range(6), coerce=int)
-    movie_id = HiddenField("movie_id", validators=[DataRequired()])
+    submit = SubmitField("Rate")

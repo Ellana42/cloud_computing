@@ -1,6 +1,6 @@
 from movie_recs import db
 
-class Reviews(db.Model):
+class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     movie_id = db.Column(db.Integer, nullable=False)
     rating = db.Column(db.Integer)

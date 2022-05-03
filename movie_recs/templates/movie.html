@@ -6,10 +6,20 @@
         <small class="text-muted">{{ movie_data['date'] }}</small>
       </div>
       <h2 class="article-title">{{ movie_data['title'] }}</h2>
-    </div>
-    <form>
 
+    <form action="" method="POST">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <div class="form-group">
+                    {{ form.rating.label(class="form-control-label") }}
+                    {{ form.rating(class="form-control form-control-lg") }}
+                </div>
+            </fieldset>
+            <div>
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
     </form>
+    </div>
   </article>
   <!-- Modal -->
   <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
