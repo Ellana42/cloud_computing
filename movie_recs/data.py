@@ -2,10 +2,10 @@ import pandas as pd
 from pathlib import Path
 
 def get_data():
-    path = Path("data/movie_titles.csv")
+    path = Path("movie_recs/data/movie_titles.csv")
     if not path.is_file():
         raise Exception('No movie data found !')
-    movies = pd.read_csv("data/movie_titles.csv", sep='|', encoding="ISO-8859-1", index_col=0, dtype={'date': 'Int64'})
+    movies = pd.read_csv(path, sep='|', encoding="ISO-8859-1", index_col=0, dtype={'date': 'Int64'})
     return movies
 
 def search_movie(movies : pd.DataFrame, input_str: str) -> list:

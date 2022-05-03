@@ -1,16 +1,14 @@
-from flask import Flask, render_template
-from forms import SearchForm
-from data import search_movie, get_data
-from flask import request
+from movie_recs import app, db, movies_df
+from flask import render_template, request
+from movie_recs.data import search_movie
+from movie_recs.forms import SearchForm
+from movie_recs.models import Reviews
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'dev'
-
-movies = get_data()
+# TODO change db model
 
 def get_results(search_form):
     input_str = search_form.data['search_term'].lower()
-    res = search_movie(movies, input_str)
+    res = search_movie(movies_df, input_str)
     return res
 
 @app.route("/", methods=['GET', 'POST'])
@@ -25,8 +23,5 @@ def home():
 @app.route("/movie")
 def movie_page():
     movie_id = request.args.get('movie_id')
-    movie_data = movies.iloc[int(movie_id) - 1]
+    movie_data = movies_df.iloc[int(movie_id) - 1]
     return render_template('movie.html', movie_data=movie_data)
-
-if __name__ == "__main__":
-    app.run(debug=True)
