@@ -8,7 +8,7 @@ class Review(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
-        return f"Movie('{self.title}', '{self.date}')"
+        return f"Movie('{self.movie_id}', '{self.rating}', '{self.author_id}')"
 
 @login_manager.user_loader
 def load_user(user_id):

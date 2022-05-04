@@ -23,16 +23,20 @@ def home():
         results = []
     return render_template('home.html', form=search_form, results=results)
 
+# TODO overwrite past rating
+# TODO user conditional rating
 @app.route("/movie", methods=['GET', 'POST'])
 def movie_page():
+    movie_id = int(request.args.get('movie_id'))
+    review = Review.query.filter_by(movie_id=movie_id).first()
     review_form = ReviewForm()
-    movie_id = request.args.get('movie_id')
-    movie_data = movies_df.iloc[int(movie_id) - 1]
+    review_form.rating.data = review.rating
+    movie_data = movies_df.iloc[movie_id - 1]
     if review_form.validate_on_submit():
-        review = Review(rating=review_form.data['rating'], movie_id=int(movie_id), author=current_user)
-        # db.session.add(review)
-        # db.session.commit()
-        # flash('Your review has been saved!', 'success')
+        review = Review(rating=review_form.data['rating'], movie_id=movie_id, author=current_user)
+        db.session.add(review)
+        db.session.commit()
+        flash('Your review has been saved!', 'success')
         return redirect(url_for('home'))
     else:
         pass
