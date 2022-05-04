@@ -23,7 +23,6 @@ def home():
         results = []
     return render_template('home.html', form=search_form, results=results)
 
-# TODO overwrite past rating
 @app.route("/movie", methods=['GET', 'POST'])
 def movie_page():
     movie_id = int(request.args.get('movie_id'))
