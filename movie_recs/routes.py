@@ -24,22 +24,33 @@ def home():
     return render_template('home.html', form=search_form, results=results)
 
 # TODO overwrite past rating
-# TODO user conditional rating
 @app.route("/movie", methods=['GET', 'POST'])
 def movie_page():
     movie_id = int(request.args.get('movie_id'))
-    review = Review.query.filter_by(movie_id=movie_id).first()
-    review_form = ReviewForm()
-    review_form.rating.data = review.rating
+    if current_user.is_authenticated:
+        past_review = Review.query.filter_by(movie_id=movie_id, author=current_user).first()
+    else:
+        past_review = None
+    if (past_review is not None):
+        review_form = ReviewForm(rating=past_review.rating)
+    else :
+        review_form = ReviewForm()
     movie_data = movies_df.iloc[movie_id - 1]
     if review_form.validate_on_submit():
-        review = Review(rating=review_form.data['rating'], movie_id=movie_id, author=current_user)
-        db.session.add(review)
-        db.session.commit()
-        flash('Your review has been saved!', 'success')
-        return redirect(url_for('home'))
-    else:
-        pass
+        if not current_user.is_authenticated:
+            flash("You are not authenticated, you cannot rate movies !", "danger")
+        else :
+            print("Rating")
+            print(review_form.data['rating']) # Does not update on submit for some reason
+            new_review = Review(rating=review_form.data['rating'], movie_id=movie_id, author=current_user)
+            if (past_review is not None):
+                print("Deleting")
+                db.session.delete(past_review)
+                db.session.commit()
+            db.session.add(new_review)
+            db.session.commit()
+            flash('Your review has been saved!', 'success')
+            return redirect(url_for('home'))
     return render_template('movie.html', form=review_form, movie_data=movie_data)
 
 @app.route("/register", methods=['GET', 'POST'])
