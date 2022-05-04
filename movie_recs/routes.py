@@ -4,6 +4,7 @@ from movie_recs.data import search_movie
 from movie_recs.forms import SearchForm, ReviewForm, RegistrationForm, LoginForm
 from movie_recs.models import Review, User
 from flask_login import login_user, current_user, logout_user, login_required
+from movie_recs.get_recommendations import get_recs
 
 @app.before_first_request
 def create_tables():
@@ -93,3 +94,9 @@ def logout():
 @login_required
 def account():
     return render_template('account.html', title='Account')
+
+@app.route("/recommend")
+@login_required
+def recommend():
+    recs = get_recs(current_user)
+    return render_template('recommend.html', title="Recommendations", recs=recs)
