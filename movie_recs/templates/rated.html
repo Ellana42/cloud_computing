@@ -1,0 +1,8 @@
+{% extends "layout.html" %}
+{% block content %}
+{% for _, movie in rated.iterrows() %}
+    <div class="content-section">
+         <a class="nav-item nav-link" href="{{ url_for('movie_page', movie_id=movie.index) }}">{{ movie['title'] }}</a>
+    </div>
+{% endfor %}
+{% endblock content %}

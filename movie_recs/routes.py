@@ -40,11 +40,8 @@ def movie_page():
         if not current_user.is_authenticated:
             flash("You are not authenticated, you cannot rate movies !", "danger")
         else :
-            print("Rating")
-            print(review_form.data['rating']) # Does not update on submit for some reason
             new_review = Review(rating=review_form.data['rating'], movie_id=movie_id, author=current_user)
             if (past_review is not None):
-                print("Deleting")
                 db.session.delete(past_review)
                 db.session.commit()
             db.session.add(new_review)
@@ -100,3 +97,11 @@ def account():
 def recommend():
     recs = get_recs(current_user)
     return render_template('recommend.html', title="Recommendations", recs=recs)
+
+@app.route("/rated")
+@login_required
+def rated():
+    reviews = Review.query.filter_by(author=current_user).all()
+    ids = [review.movie_id - 1 for review in reviews]
+    rated = movies_df.loc[movies_df.index[ids]]
+    return render_template('rated.html', title="Rated", rated=rated)
