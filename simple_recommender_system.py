@@ -1,5 +1,5 @@
 import numpy as np
-
+import pickle
 
 class recommender_system:
   '''Simple recommender system class based on matrix factorization'''
@@ -8,11 +8,24 @@ class recommender_system:
     '''Instantiates recommendation_system class.
     k : rank dimension of factorized matrix
     lr : learning rate
-    lambda_reg : regularization parameter'''
+    lambda_reg : regularization parameter
+    max_value : maximum value possible for the generated matrices to avoid overflow'''
     self.k = k
     self.lr = lr
     self.lambda_reg = lambda_reg
     return None
+
+  def set_k(self, k):
+    '''Set rank of the two factorized matrices'''
+    self.k = k
+
+  def set_lr(self, lr):
+    '''set learning rate '''
+    self.lr = lr
+
+  def set_lambda_reg(self,lambda_reg):
+    '''set regularization parameter'''
+    self.lambda_reg=lambda_reg
 
   def instantiate_matrices(self):
     '''Instantiate factorized matrixes'''
@@ -91,6 +104,8 @@ class recommender_system:
       self.second_mat += self.lr*(error*self.first_mat[row] - self.lambda_reg*self.second_mat[col])
 
   def matrix_factorization(self, number_iterations):
+    '''Apply matrix factorization
+    number_iterations : number of training epochs'''
     losses = []
     for i in range(number_iterations):
       self.sgd_gradient_step()
@@ -100,6 +115,9 @@ class recommender_system:
     return losses
 
   def get_recommendation(self, user_id, nb_recom = 2):
+    '''Give item recommendations to a specific user using the factorized matrices
+    user_id : user to which recommend item
+    nb_recom : number of recommended items'''
     curr_ratings = np.array(np.matmul(self.first_mat, self.second_mat.T)[user_id])
 
     ordered_item_indexes = np.argsort(curr_ratings)
@@ -108,3 +126,62 @@ class recommender_system:
     recommendations = ordered_item_indexes[-nb_recom:]
 
     return recommendations
+
+  def save_model(self, path):
+    '''Save a pickled version of the model's parameters
+    path : path under which to save pickled parameters'''
+    to_save = [self.first_mat.tolist(), self.second_mat.tolist(), self.k]
+    with open(path,"wb") as f:
+      pickle.dump(to_save, f)
+    print("Done")
+    return None
+
+  def load_model(self,path):
+    '''Load model from pickled parameters
+    path : path to pickled parameters'''
+    with open(path,'rb') as f:
+      parameters = pickle.load(f)
+    self.first_mat = np.array(parameters[0]).astype(int)
+    self.second_mat = np.array(parameters[1]).astype(int)
+    self.k = parameters[2]
+
+
+  def get_nearest_neighbors(self, user_rating, nb_neighbors):
+    '''Given a user which is not present in our dataset, find nearest neighbors
+    user_rating : 1D vector containing user rating
+    nb_neighbors : number of neighbors indexes that we want to retrieve'''
+    ratings = np.matmul(self.first_mat, self.second_mat.T)
+
+    squared_dist = (ratings-user_rating)**2
+
+    distances = np.sum(squared_dist, axis = 1)
+
+    sorted_distances_idx = np.argsort(distances)
+
+    closest = sorted_distances_idx[-nb_neighbors:]
+
+    return(closest)
+
+
+  def get_recommendation_new_user(self, user_rating, nb_recom, nb_neighbors=10):
+    '''Given a user WHICH IS NOT INITIALLY IN THE DATASET, find nearest neighbors and predict recommendations based on these nearest neighbors'''
+    rated_items = np.nonzero(user_rating)[0]
+
+    neighbors_indexes = self.get_nearest_neighbors(user_rating, nb_neighbors)
+    ratings = np.matmul(self.first_mat, self.second_mat.T)
+    for i in range(nb_neighbors) :
+
+      if i == 0:
+        res = ratings[neighbors_indexes[i]]
+      else :
+        res += ratings[neighbors_indexes[i]]
+
+    res = res / nb_neighbors
+
+    ordered_item_indexes = np.argsort(res)
+
+    ordered_item_indexes = [index for index in ordered_item_indexes if index not in rated_items]
+
+    recommendations = ordered_item_indexes[-nb_recom:]
+
+    return(recommendations)
