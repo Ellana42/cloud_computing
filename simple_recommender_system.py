@@ -13,7 +13,7 @@ class recommender_system:
     self.k = k
     self.lr = lr
     self.lambda_reg = lambda_reg
-    return None
+
 
   def set_k(self, k):
     '''Set rank of the two factorized matrices'''
@@ -38,45 +38,64 @@ class recommender_system:
     for row, col, _ in self.Ratings:
       self.tested_items[row].append(col)
 
-  def load_sparse_data(self,file_, delimiter = ",", nb_rows_to_keep = -1, nb_cols_to_keep =-1, shuffle_matrix = True):
+  def load_sparse_data(self,file_, delimiter = ",", nb_rows_to_keep = -1, nb_cols_to_keep =-1, shuffle_matrix = True, correct_shape = False):
     '''Load data and shape it correctly for recommendation. Output format is a 2d numpy array. Each element of this output
       is in the format [row of the rating, column of the rating, Rating]
     file : either path to txt or csv file containing the dataset, or matrix to be used for recommendation. If file is a path
     shuffle_matrix : Boolean. if set to True
     nb_rows_to_keep : Number of rows to keep (if negative, keep all rows)
-    nb_cols_to_keep : Number of columns to keep (if negative, keep all rows)'''
+    nb_cols_to_keep : Number of columns to keep (if negative, keep all rows)
+    correct_shape : set to True if input matrix is already in correct shape'''
 
     if isinstance(file_,str):
-      grade_matrix = np.genfromtxt(file_, delimiter, dtype = "int32")
+      grade_matrix = np.genfromtxt(file_, delimiter=delimiter, dtype = "int32")
 
     else:
       grade_matrix = file_
 
-    self.nb_rows = len(grade_matrix)
-    self.nb_cols = len(grade_matrix[0])
+    if not correct_shape :
 
-    if nb_rows_to_keep >0 and nb_rows_to_keep < len(grade_matrix):
-      grade_matrix = grade_matrix[:nb_rows_to_keep]
       self.nb_rows = len(grade_matrix)
-
-    if nb_cols_to_keep >0 and nb_cols_to_keep < len(grade_matrix[0]):
-      grade_matrix = grade_matrix[:,:nb_cols_to_keep]
       self.nb_cols = len(grade_matrix[0])
 
-    self.instantiate_matrices()
+      if nb_rows_to_keep >0 and nb_rows_to_keep < len(grade_matrix):
+        grade_matrix = grade_matrix[:nb_rows_to_keep]
+        self.nb_rows = len(grade_matrix)
 
-    non_zero_indexes = np.nonzero(grade_matrix)
+      if nb_cols_to_keep >0 and nb_cols_to_keep < len(grade_matrix[0]):
+        grade_matrix = grade_matrix[:,:nb_cols_to_keep]
+        self.nb_cols = len(grade_matrix[0])
 
-    n = len(non_zero_indexes[0])
-    put_in_shape_matrix = np.array([[non_zero_indexes[0][i], non_zero_indexes[1][i], grade_matrix[non_zero_indexes[0][i], non_zero_indexes[1][i]]] for i in range(n)])
-    put_in_shape_matrix = put_in_shape_matrix.astype(int)
+      self.instantiate_matrices()
 
-    if shuffle_matrix:
-      np.random.shuffle(put_in_shape_matrix)
+      non_zero_indexes = np.nonzero(grade_matrix)
 
-    self.Ratings = put_in_shape_matrix
+      n = len(non_zero_indexes[0])
+      put_in_shape_matrix = np.array([[non_zero_indexes[0][i], non_zero_indexes[1][i], grade_matrix[non_zero_indexes[0][i], non_zero_indexes[1][i]]] for i in range(n)])
+      put_in_shape_matrix = put_in_shape_matrix.astype(int)
 
-    self.instantiate_initially_pressent_items()
+      if shuffle_matrix:
+        np.random.shuffle(put_in_shape_matrix)
+
+      self.Ratings = put_in_shape_matrix
+
+      self.instantiate_initially_pressent_items()
+
+    else:
+
+      if nb_rows_to_keep >0 :
+        grade_matrix = grade_matrix[grade_matrix[:,0]<nb_rows_to_keep]
+
+      if nb_cols_to_keep >0:
+        grade_matrix = grade_matrix[grade_matrix[:,1]<nb_cols_to_keep]
+
+      self.Ratings = grade_matrix
+
+      self.nb_rows = np.max(grade_matrix[:,0])+1
+      self.nb_cols = np.max(grade_matrix[:,1])+1
+
+      self.instantiate_matrices()
+      self.instantiate_initially_pressent_items()
     return None
 
 
@@ -104,8 +123,6 @@ class recommender_system:
       self.second_mat += self.lr*(error*self.first_mat[row] - self.lambda_reg*self.second_mat[col])
 
   def matrix_factorization(self, number_iterations):
-    '''Apply matrix factorization
-    number_iterations : number of training epochs'''
     losses = []
     for i in range(number_iterations):
       self.sgd_gradient_step()
@@ -115,9 +132,6 @@ class recommender_system:
     return losses
 
   def get_recommendation(self, user_id, nb_recom = 2):
-    '''Give item recommendations to a specific user using the factorized matrices
-    user_id : user to which recommend item
-    nb_recom : number of recommended items'''
     curr_ratings = np.array(np.matmul(self.first_mat, self.second_mat.T)[user_id])
 
     ordered_item_indexes = np.argsort(curr_ratings)
@@ -164,7 +178,7 @@ class recommender_system:
 
 
   def get_recommendation_new_user(self, user_rating, nb_recom, nb_neighbors=10):
-    '''Given a user WHICH IS NOT INITIALLY IN THE DATASET, find nearest neighbors and predict recommendations based on these nearest neighbors'''
+
     rated_items = np.nonzero(user_rating)[0]
 
     neighbors_indexes = self.get_nearest_neighbors(user_rating, nb_neighbors)
