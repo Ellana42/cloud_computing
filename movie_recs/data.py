@@ -14,16 +14,9 @@ def get_data():
 
 def search_movie(movies : pd.DataFrame, input_str: str) -> list:
     movies['index_col'] = movies.index
-    print(movies)
     results = movies[movies.title.apply(lambda s : s.lower()).str.contains(input_str)]
     titles = results['title'].to_list()
     dates = results['date'].to_list()
     idx = results['index_col'].to_list()
     res = [{'title' : title, 'date' : date, 'id': i} for title, date, i in zip(titles, dates, idx)]
     return res
-
-if __name__ == "__main__":
-    movies = get_data()
-    input_str = "twi"
-    results = search_movie(movies, input_str)
-    print(results)
