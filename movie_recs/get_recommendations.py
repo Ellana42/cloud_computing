@@ -1,7 +1,6 @@
 from movie_recs import movies_df
 from matrix_completion_recommender_system.simple_recommender_system import recommender_system
 from pathlib import Path
-from flask_login import current_user
 from movie_recs.models import Review
 import numpy as np
 
