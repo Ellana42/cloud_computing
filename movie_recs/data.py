@@ -9,7 +9,7 @@ def get_data():
         os.mkdir(Path("movie_recs/data"))
         url = "https://drive.google.com/file/d/1DfaDX2uEmRBaozm8KSoYyLO8grFjTulL/view?usp=sharing"
         gdown.download(url=url, output=str(path), quiet=True, fuzzy=True)
-    movies = pd.read_csv(path, sep='|', encoding="ISO-8859-1", index_col=0, dtype={'date': 'Int64'})
+    movies = pd.read_csv(path, sep='|', encoding="ISO-8859-1", index_col=0, dtype={'date': 'Int64'}).head(2993)
     return movies
 
 # Unused in last version
