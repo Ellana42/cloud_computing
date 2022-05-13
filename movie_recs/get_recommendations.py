@@ -15,7 +15,7 @@ def reviews_to_array(user):
 
 def get_recommendation(user, nb_to_rec=5):
     weights_path = Path('matrix_completion_recommender_system/reduced_netflix_model.pickle')
-    recommender = recommender_system(100, 0.0001, 1)
+    recommender = recommender_system(300, 0.0001, 1)
     recommender.load_model(weights_path)
     user_reviews = reviews_to_array(user)
     recs = recommender.get_recommendation_new_user(user_reviews, nb_to_rec)

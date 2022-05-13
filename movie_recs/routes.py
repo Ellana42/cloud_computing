@@ -1,6 +1,6 @@
 from movie_recs import app, db, movies_df, bcrypt
 from flask import render_template, request, url_for, flash, redirect
-from data import simple_search_movie
+from movie_recs.data import simple_search_movie
 from movie_recs.forms import SearchForm, ReviewForm, RegistrationForm, LoginForm
 from movie_recs.models import Review, User
 from flask_login import login_user, current_user, logout_user, login_required
