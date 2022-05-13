@@ -24,6 +24,7 @@ def similarity_calculator(word1, word2):
 def search_movie(movies : pd.DataFrame, input_str: str) -> list:
     movies['index_col'] = movies.index
     index_results = movies.title.apply(lambda x : similarity_calculator(x,input_str)).sort_values(ascending=False).index.to_list()[:10]
+    index_results = [idx - 1 for idx in index_results]
     results = movies.loc[movies.index[index_results]]
     titles = results['title'].to_list()
     dates = results['date'].to_list()

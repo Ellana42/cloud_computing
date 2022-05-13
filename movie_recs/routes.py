@@ -1,6 +1,6 @@
 from movie_recs import app, db, movies_df, bcrypt
 from flask import render_template, request, url_for, flash, redirect
-from movie_recs.data import simple_search_movie
+from fuzzy_search.search_engine import search_movie
 from movie_recs.forms import SearchForm, ReviewForm, RegistrationForm, LoginForm
 from movie_recs.models import Review, User
 from flask_login import login_user, current_user, logout_user, login_required
@@ -12,7 +12,7 @@ def create_tables():
 
 def get_results(search_form):
     input_str = search_form.data['search_term'].lower()
-    res = simple_search_movie(movies_df, input_str)
+    res = search_movie(movies_df, input_str)
     return res
 
 @app.route("/", methods=['GET', 'POST'])
