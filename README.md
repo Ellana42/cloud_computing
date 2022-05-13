@@ -19,3 +19,5 @@ Le système utilisé pour l'application est le système de factorisation matrici
 Les trois systèmes de recommendations sont illustrés par des notebooks.
 
 Il y a plusieurs onglets sur l'application. Un premier onglet pour rechercher des films, un second pour voir les films que l'utilisateur a noté et un troisième qui donne les recommendations. Pour pouvoir noter les films, il faut s'inscrire (register) puis se connecter. Il faut pour cela renseigner une adresse mail un username et un mot de passe, mais ceux-ci peuvent être quelconques ( pas de validation de mail, c'était uniquement plus logique d'ajouter un système de connexion à l'interface ).
+
+La génération de recommendations prend quelque seconde.
