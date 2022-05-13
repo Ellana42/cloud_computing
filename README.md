@@ -2,12 +2,11 @@
 
 Projet réalisé pour le cours de Cloud Computing de l'Ensae.
 
-Pour lancer l'application qui showcase le système de recommendation : 
-
+Pour lancer le projet : 
 
 ```
-bash build.sh
-bash run.sh
+docker build -t flask_app .
+docker run -t -p 5000:5000 --name flask_app flask_app
 ```
 
 L'application devrait ensuite être trouvable à l'addresse localhost:5000 de votre navigateur.
