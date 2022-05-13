@@ -10,7 +10,7 @@ def dummy_rec():
 def reviews_to_array(user):
     reviews = Review.query.filter_by(author=user).all()
     ratings = {review.movie_id - 1: review.rating for review in reviews}
-    ratings_array = np.array([0 if idx not in ratings.keys() else ratings[idx] for idx in range(4997)])
+    ratings_array = np.array([0 if idx not in ratings.keys() else ratings[idx] for idx in range(2993)])
     return (ratings_array)
 
 def get_recommendation(user, nb_to_rec=5):
