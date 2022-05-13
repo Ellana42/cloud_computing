@@ -1,7 +1,8 @@
-import fuzzywuzzy
+from thefuzz import fuzz
 import jaro
 import re
 import unicodedata
+import pandas as pd
 
 def normalize_unicode_to_ascii(data):
     normal = unicodedata.normalize('NFKD', data).encode('ASCII', 'ignore')

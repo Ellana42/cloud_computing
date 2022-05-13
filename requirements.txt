@@ -30,6 +30,7 @@ requests==2.27.1
 six==1.16.0
 soupsieve==2.3.2.post1
 SQLAlchemy==1.4.36
+thefuzz==0.19.0
 tqdm==4.64.0
 unicodedata2==14.0.0
 urllib3==1.26.9
