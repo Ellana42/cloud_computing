@@ -144,7 +144,7 @@ class recommender_system:
   def save_model(self, path):
     '''Save a pickled version of the model's parameters
     path : path under which to save pickled parameters'''
-    to_save = [self.first_mat.tolist(), self.second_mat.tolist(), self.k]
+    to_save = [self.first_mat.tolist(), self.second_mat.tolist(), self.k, self.tested_items]
     with open(path,"wb") as f:
       pickle.dump(to_save, f)
     print("Done")
@@ -158,6 +158,7 @@ class recommender_system:
     self.first_mat = np.array(parameters[0]).astype(int)
     self.second_mat = np.array(parameters[1]).astype(int)
     self.k = parameters[2]
+    self.tested_items = parameters[3]
 
 
   def get_nearest_neighbors(self, user_rating, nb_neighbors):
