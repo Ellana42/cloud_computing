@@ -12,7 +12,8 @@ def get_data():
     movies = pd.read_csv(path, sep='|', encoding="ISO-8859-1", index_col=0, dtype={'date': 'Int64'})
     return movies
 
-def search_movie(movies : pd.DataFrame, input_str: str) -> list:
+# Unused in last version
+def simple_search_movie(movies : pd.DataFrame, input_str: str) -> list:
     movies['index_col'] = movies.index
     results = movies[movies.title.apply(lambda s : s.lower()).str.contains(input_str)]
     titles = results['title'].to_list()

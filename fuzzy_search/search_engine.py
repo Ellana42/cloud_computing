@@ -22,8 +22,11 @@ def similarity_calculator(word1, word2):
     return  score_2 + score_1/100
 
 def search_movie(movies : pd.DataFrame, input_str: str) -> list:
-    res = movies.title.apply(lambda x : similarity_calculator(x,input_str)).sort_values(ascending=False).index.to_list()[:10]
     movies['index_col'] = movies.index
-    results = movies[movies.title.apply(lambda s : s.lower()).str.contains(input_str)]
+    index_results = movies.title.apply(lambda x : similarity_calculator(x,input_str)).sort_values(ascending=False).index.to_list()[:10]
+    results = movies.loc[movies.index[index_results]]
+    titles = results['title'].to_list()
+    dates = results['date'].to_list()
     idx = results['index_col'].to_list()
-    return list(set(idx) | set(res))
+    res = [{'title' : title, 'date' : date, 'id': i} for title, date, i in zip(titles, dates, idx)]
+    return res
