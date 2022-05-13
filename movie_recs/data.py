@@ -1,10 +1,12 @@
 import pandas as pd
 from pathlib import Path
+import gdown
 
 def get_data():
     path = Path("movie_recs/data/movie_titles.csv")
     if not path.is_file():
-        raise Exception('No movie data found !')
+        url = "https://drive.google.com/drive/folders/1FdNoYOgz8gg7FXl4Vw7f8_o8aFCCXveY?usp=sharing"
+        gdown.download(url=url, output=path, quiet=True, fuzzy=True)
     movies = pd.read_csv(path, sep='|', encoding="ISO-8859-1", index_col=0, dtype={'date': 'Int64'})
     return movies
 
